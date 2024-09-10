@@ -12,11 +12,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          node-version: 'x'
 
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.x'
+          node-version: 'x'
 
       - name: Install dependencies
         run: |
