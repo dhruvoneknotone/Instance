@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launch Instance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .logo img {
+            width: 666px;
+            height: 205px;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #00ADB5;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #00a2aa;
+        }
+        .instance-info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            max-width: 200px;
+            margin-right: 10px;
+        }
+        .instance-info h3 {
+            margin: 0;
+        }
+        .instance-info p {
+            margin: 5px 0;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://oneknotone.co/wp-content/uploads/2024/04/Oko-black-small-size-logo.png" alt="Company Logo">
+        </div>
+
+        <h2>Launch Instance</h2>
+        <form id="launchForm">
+            <label for="instanceName">Enter Instance Name:</label>
+            <input type="text" id="instanceName" name="instance_name" placeholder="Enter Instance Name" required>
+            <br><br>
+            <button type="submit" id="launchButton">Launch</button>
+            <div class="loader" id="loader" style="display: none;"></div>
+        </form>
+
+        <div class="card-container" id="instanceInfoContainer"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#launchForm").submit(function(event) {
+                event.preventDefault();
+                var instanceName = $("#instanceName").val().trim();
+                if (!instanceName) {
+                    alert("Please enter an instance name.");
+                    return;
+                }
+
+                $("#loader").show();
+
+                $.ajax({
+                    url: '/launch_instance',
+                    type: 'POST',
+                    contentType: 'application/x-www-form-urlencoded',
+                    data: 'instance_name=' + encodeURIComponent(instanceName),
+                    success: function(data) {
+                        var instanceId = data.instance_id;
+                        var publicIp = data.public_ip;
+                        var instanceName = data.instance_name;
+
+                        var instanceCard = `
+                            <div class="instance-info">
+                                <h3>Instance Info</h3>
+                                <p>Instance-id: ${instanceId}</p>
+                                <p>Instance Name: ${instanceName}</p>
+                                <p>Public IP Address: ${publicIp}</p>
+                                <p>Time of Creation: ${new Date().toLocaleString()}</p>
+                            </div>
+                        `;
+                        $("#instanceInfoContainer").append(instanceCard);
+
+                        $("#loader").hide();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('Failed to launch instance.');
+                        $("#loader").hide();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
