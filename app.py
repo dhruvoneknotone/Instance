@@ -4,6 +4,9 @@ import boto3
 app = Flask(__name__)
 
 def initialize_boto3_session(profile_name="default", region_name='us-east-1'):
+    """
+    Initialize a boto3 session with the given profile name and region name.
+    """
     session = boto3.Session(profile_name=profile_name)
     return session.client('ec2', region_name=region_name)
 
@@ -11,9 +14,15 @@ ec2 = initialize_boto3_session()
 
 @app.route('/')
 def index():
+    """
+    Render the index page.
+    """
     return render_template('index.html')
 
 def launch_ec2_instance(instance_name):
+    """
+    Launch a new EC2 instance with the given name.
+    """
     response = ec2.run_instances(
         ImageId='ami-04b70fa74e45c3917',
         InstanceType='t2.micro',
@@ -26,15 +35,24 @@ def launch_ec2_instance(instance_name):
     return response['Instances'][0]['InstanceId']
 
 def wait_for_instance(instance_id):
+    """
+    Wait for the instance with the given ID to be in the running state.
+    """
     waiter = ec2.get_waiter('instance_running')
     waiter.wait(InstanceIds=[instance_id])
 
 def get_instance_public_ip(instance_id):
+    """
+    Get the public IP address of the instance with the given ID.
+    """
     response = ec2.describe_instances(InstanceIds=[instance_id])
     return response['Reservations'][0]['Instances'][0].get('PublicIpAddress', 'N/A')
 
 @app.route('/launch_instance', methods=['POST'])
 def launch_instance():
+    """
+    Handle the request to launch a new EC2 instance.
+    """
     try:
         instance_name = request.form['instance_name']
         instance_id = launch_ec2_instance(instance_name)
