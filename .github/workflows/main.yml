@@ -13,18 +13,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          repository: ${{ github.repository }}
-          ref: ${{ github.ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          node-version: 'x'
+          node-version: '14.x'
 
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.x'
-          architecture: 'x64'
-          token: ${{ secrets.GITHUB_TOKEN }}
-          node-version: 'x'
+          node-version: '14.x'
 
       - name: Install dependencies
         run: |
@@ -34,4 +29,7 @@ jobs:
 
       - name: Lint
         run: |
-          flake8 app.py
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+
