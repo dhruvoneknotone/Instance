@@ -27,11 +27,11 @@ jobs:
           pip install flake8
           pip install -r requirements.txt
 
-      - name: Lint
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
-      - name: Check if app.py will work
+      - name: Lint app.py
         run: |
           flake8 app.py
+
+      - name: Lint index.html
+        run: |
+          pip install beautifulsoup4
+          python -m bs4 index.html
