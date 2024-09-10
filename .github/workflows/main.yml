@@ -14,10 +14,12 @@ jobs:
         uses: actions/checkout@v4  # Updated to v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3  # Consider updating to v4 if available
+        uses: actions/setup-node@v4  # Updated to v4
 
       - name: Set up Python
         uses: actions/setup-python@v4  # Ensure this is the latest version
+        with:
+          python-version: '3.9'  # Specify the desired Python version
 
       - name: Install dependencies
         run: |
